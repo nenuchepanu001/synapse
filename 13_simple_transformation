@@ -1,0 +1,58 @@
+use nyc_taxi_discovery;
+
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data;
+
+-- 
+SELECT
+    TOP 100 
+    lpep_pickup_datetime,
+    lpep_dropoff_datetime,
+    DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60 as from_hour,
+    (DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60)+1 as to_hour
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+
+SELECT
+    DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60 as from_hour,
+    (DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60)+1 as to_hour,
+    COUNT(1) as number_of_trips
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+GROUP BY     DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60,
+    (DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60)+1
+ORDER BY  from_hour,to_hour;
+
+--
+
+SELECT
+    DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60 as from_hour,
+    (DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60)+1 as to_hour,
+    COUNT(1) as number_of_trips
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/**',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+GROUP BY     DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60,
+    (DATEDIFF(minute,lpep_pickup_datetime,lpep_dropoff_datetime)/60)+1
+ORDER BY  from_hour,to_hour;
+
+
+
+
