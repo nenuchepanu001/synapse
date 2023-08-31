@@ -64,3 +64,24 @@ IF NOT EXISTS ( SELECT * FROM sys.external_file_formats WHERE name='tsv_file_for
             , PARSER_VERSION = '1.0'
         )
     );
+
+-- create external file format for parquet_file_format
+
+IF NOT EXISTS ( SELECT * FROM sys.external_file_formats WHERE name='parquet_file_format')
+    CREATE EXTERNAL FILE FORMAT parquet_file_format
+    WITH
+    (
+        FORMAT_TYPE = PARQUET,
+        DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
+    );
+
+-- create external file format for parquet_file_format
+
+IF NOT EXISTS ( SELECT * FROM sys.external_file_formats WHERE name='delta_file_format')
+    CREATE EXTERNAL FILE FORMAT delta_file_format
+    WITH
+    (
+        FORMAT_TYPE = DELTA
+    );
+
+
