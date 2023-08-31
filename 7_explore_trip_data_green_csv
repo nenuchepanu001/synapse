@@ -1,0 +1,69 @@
+-- This is auto-generated code
+USE nyc_taxi_discovery;
+
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_csv/year=2020/month=01/green_tripdata_2020-01.csv',
+        DATA_SOURCE='nyc_taxi_data_raw',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW=TRUE
+    ) AS [result]
+
+--select data from a folder
+
+
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_csv/year=2020/month=01/*',
+        DATA_SOURCE='nyc_taxi_data_raw',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW=TRUE
+    ) AS [result]
+-- select data from subfolders
+
+
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_csv/year=2020/**',
+        DATA_SOURCE='nyc_taxi_data_raw',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW=TRUE
+    ) AS [result]
+
+-- get data from more than one file
+
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK ('trip_data_green_csv/year=2020/month=01/*.csv',
+        'trip_data_green_csv/year=2020/month=03/*.csv'),
+        DATA_SOURCE='nyc_taxi_data_raw',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW=TRUE
+    ) AS [result]
+
+-- use more than 1 wild card character
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_csv/year=*/month=*/*.csv',
+        DATA_SOURCE='nyc_taxi_data_raw',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW=TRUE
+    ) AS [result]
+
+
+
