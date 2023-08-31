@@ -53,5 +53,50 @@ SELECT payment_type,description
     SELECT * FROM bronze.vw_payment_type
     GO
 
+-- create view for trip_data_green
+DROP VIEW IF EXISTS bronze.vw_trip_data_green_csv
+GO
 
+create VIEW bronze.vw_trip_data_green_csv
+AS
+SELECT
+    result.filepath(1) as year,
+    result.filepath(2) as month,
+    result.*
+    FROM
+    OPENROWSET(
+        BULK 'raw/trip_data_green_csv/year=*/month=*/*.csv',
+        DATA_SOURCE = 'nyc_taxi_src',
+        FORMAT='CSV',
+        PARSER_VERSION='2.0',
+        HEADER_ROW=TRUE
+    ) 
+    WITH
+    (
+                VendorID INT,
+        lpep_pickup_datetime DATETIME2(7),
+        lpep_dropoff_datetime DATETIME2(7),
+        store_and_fwd_flag CHAR(1),
+        RatecodeID INT,
+        PULocationID INT,
+        DOLocationID INT,
+        passenger_count INT,
+        trip_distance FLOAT,
+        fare_amount FLOAT,
+        extra FLOAT,
+        mta_tax FLOAT,
+        tip_amount FLOAT,
+        tolls_amount FLOAT,
+        ehail_fee INT,
+        improvement_surcharge FLOAT,
+        total_amount FLOAT,
+        payment_type INT,
+        trip_type INT,
+        congestion_surcharge FLOAT
+    )AS [result]
+    GO
+
+SELECT TOP(100) * FROM bronze.vw_trip_data_green_csv
+WHERE year='2020' and month='01'
+GO
 
