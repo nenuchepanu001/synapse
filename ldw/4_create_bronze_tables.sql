@@ -150,3 +150,80 @@ WITH
 
 SELECT TOP 100 * from bronze.trip_data_green_csv;
 
+
+----- parquet file
+IF OBJECT_ID('bronze.trip_data_green_parquet') IS NOT NULL
+    DROP EXTERNAL TABLE bronze.trip_data_green_parquet;
+-- Create a new external table
+
+CREATE EXTERNAL TABLE  bronze.trip_data_green_parquet
+(  
+        VendorID INT,
+        lpep_pickup_datetime DATETIME2(7),
+        lpep_dropoff_datetime DATETIME2(7),
+        store_and_fwd_flag CHAR(1),
+        RatecodeID INT,
+        PULocationID INT,
+        DOLocationID INT,
+        passenger_count INT,
+        trip_distance FLOAT,
+        fare_amount FLOAT,
+        extra FLOAT,
+        mta_tax FLOAT,
+        tip_amount FLOAT,
+        tolls_amount FLOAT,
+        ehail_fee INT,
+        improvement_surcharge FLOAT,
+        total_amount FLOAT,
+        payment_type INT,
+        trip_type INT,
+        congestion_surcharge FLOAT
+)
+WITH
+(
+        LOCATION = 'raw/trip_data_green_parquet/**',
+        DATA_SOURCE = nyc_taxi_src,
+        FILE_FORMAT = parquet_file_format
+);
+
+SELECT TOP 100 * from bronze.trip_data_green_parquet;
+
+
+----- delta file
+IF OBJECT_ID('bronze.trip_data_green_delta') IS NOT NULL
+    DROP EXTERNAL TABLE bronze.trip_data_green_delta;
+-- Create a new external table
+
+CREATE EXTERNAL TABLE  bronze.trip_data_green_delta
+(  
+        VendorID INT,
+        lpep_pickup_datetime DATETIME2(7),
+        lpep_dropoff_datetime DATETIME2(7),
+        store_and_fwd_flag CHAR(1),
+        RatecodeID INT,
+        PULocationID INT,
+        DOLocationID INT,
+        passenger_count INT,
+        trip_distance FLOAT,
+        fare_amount FLOAT,
+        extra FLOAT,
+        mta_tax FLOAT,
+        tip_amount FLOAT,
+        tolls_amount FLOAT,
+        ehail_fee INT,
+        improvement_surcharge FLOAT,
+        total_amount FLOAT,
+        payment_type INT,
+        trip_type INT,
+        congestion_surcharge FLOAT
+)
+WITH
+(
+        LOCATION = 'raw/trip_data_green_delta/',
+        DATA_SOURCE = nyc_taxi_src,
+        FILE_FORMAT = delta_file_format
+);
+
+SELECT TOP 100 * from bronze.trip_data_green_delta;
+
+
