@@ -1,0 +1,54 @@
+--- query from folders using wildcard characters
+-- use filename function
+-- query from subfolders
+-- use filepath function to select only from certain partitions
+use nyc_taxi_discovery;
+SELECT
+    TOP 100 *
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/*.parquet',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+
+--
+SELECT
+    TOP 100 
+    trip_data.filename() AS file_name,
+    trip_data.*
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/*.parquet',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+
+-- Query from subfolders
+SELECT
+    TOP 100 
+    trip_data.filepath() AS file_path,
+    trip_data.*
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/**',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+
+--4 use filepath to target partitions
+
+SELECT
+    trip_data.filepath(1) AS year,
+    trip_data.filepath(2) AS month,
+    COUNT(1) as record_count
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=*/month=*/*.parquet',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE='nyc_taxi_data_raw'
+    ) AS trip_data
+where trip_data.filepath(1)='2020'
+    AND trip_data.filepath(2) IN ('06','07','08')
+GROUP BY trip_data.filepath(1),trip_data.filepath(2)
+ORDER BY trip_data.filepath(1),trip_data.filepath(2);
