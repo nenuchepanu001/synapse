@@ -19,7 +19,7 @@ BEGIN
             )
             AS
             SELECT *
-                FROM bronze.trip_data_green_csv
+                FROM vw_bronze.trip_data_green_csv
                 where year='''+@year+''' and month='''+@month+'''';
 
     print( @create_sql_stmt)
